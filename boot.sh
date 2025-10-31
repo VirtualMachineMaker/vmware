@@ -1,3 +1,6 @@
+chmod +x ./scripts/mac.sh
+chmod +x ./scripts/windows.sh
+chmod +x ./scripts/linux.sh
 chmod +x ./windows/kubernetes.yml
 chmod +x ./windows/compose.yml
 chmod +x ./windows/Dockerfile
@@ -50,15 +53,37 @@ chmod +x ./linux/jenkins-vars.yml
 chmod +x ./linux/compose.yml
 chmod +x ./linux/package_versions.txt
 chmod +x ./linux/root/defaults/startwm.sh
-chmod +x ./linux/defaults/xfce/xsettings.xml
+chmod +x ./linux/root/defaults/xfce/xsettings.xml
 chmod +x ./linux/root/defaults/xfce/xfwm4.xml
 chmod +x ./linux/root/defaults/xfce/xfce4-panel.xml
 chmod +x ./linux/root/defaults/xfce/xfce4-desktop.xml
-chmod +x ./linux/
-chmod +x ./linux/
-chmod +x ./linux/
-chmod +x ./linux/
-chmod +x ./linux/
+chmod +x ./linux/usr/bin/chromium
+chmod +x ./linux/usr/bin/chromium-browser
+chmod +x ./linux/usr/bin/thunar
+chmod +x ./macos/Dockerfile
+chmod +x ./macos/compose.yml
+chmod +x ./macos/kubernetes.yml
+chmod +x ./macos/.dockerignore
+chmod +x ./macos/src/boot.sh
+chmod +x ./macos/src/entry.sh
+chmod +x ./macos/src/install.sh
+chmod +x ./macos/assets/config.plist
+sleep 2
+echo "Success!"
+echo "Please open 3 New Terminal Tabs"
+echo "On the first tab, type in the command: cd linux/"
+echo "On the Second tab, type in the command: cd windows/"
+echo "on the Third tab, type in the command: cd macos/"
+sleep 2 
+echo "Navigate to the first tab, and type in: docker compose up"
+echo "Navigate to the Second tab, and type in: docker compose up"
+echo "Navigate to the Third tab, and type in: docker compose up"
+sleep 4
+echo "After this process completes, Go to the ports section in your codespace, and you will see multiple processes running."
+echo "Port 3000 would be your Linux container,"
+echo "Port 8006 would be your Windows container,"
+echo "And port 5200 would be your MacOS container."
+
 
 
 
