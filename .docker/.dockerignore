@@ -1,0 +1,8 @@
+.dockerignore
+.git
+.github
+.gitignore
+Dockerfile
+Dockerfile.archive
+*.md
+*.toml
