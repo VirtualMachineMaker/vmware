@@ -208,11 +208,6 @@ jobs:
         with:
           repository: git/git
           definitionId: 9
-      - name: generate Visual Studio solution
-        shell: bash
-        run: |
-          cmake `pwd`/contrib/buildsystems/ -DCMAKE_PREFIX_PATH=`pwd`/compat/vcbuild/vcpkg/installed/x64-windows \
-          -DNO_GETTEXT=YesPlease -DPERL_TESTS=OFF -DPYTHON_TESTS=OFF -DCURL_NO_CURL_CMAKE=ON
       - name: MSBuild
         run: msbuild git.sln -property:Configuration=Release -property:Platform=x64 -maxCpuCount:4 -property:PlatformToolset=v142
       - name: bundle artifact tar
@@ -231,7 +226,7 @@ jobs:
           name: vs-artifacts
           path: artifacts
   sanitize:
-    name: Sanitize 1
+    name: development
     runs-on: ubuntu-24.04
     needs: [build]
     env:
