@@ -209,7 +209,7 @@ jobs:
           repository: git/git
           definitionId: 9
       - name: upload tracked files and build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: vs-artifacts
           path: artifacts
