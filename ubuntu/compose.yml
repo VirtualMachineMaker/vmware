@@ -11,6 +11,7 @@ services:
       - NET_ADMIN
     ports:
       - 8006:8006
+      - 2500:2500
     volumes:
       - ./qemu:/storage
     restart: always
