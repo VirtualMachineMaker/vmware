@@ -35,7 +35,7 @@ spec:
         - name: DISK_SIZE
           value: "64G"
         ports:
-          - containerPort: 8006
+          - containerPort: 8005
             name: http
             protocol: TCP
           - containerPort: 5900
@@ -74,9 +74,9 @@ spec:
   internalTrafficPolicy: Cluster
   ports:
     - name: http
-      port: 5200
+      port: 8005
       protocol: TCP
-      targetPort: 5200
+      targetPort: 8005
     - name: vnc
       port: 5900
       protocol: TCP
