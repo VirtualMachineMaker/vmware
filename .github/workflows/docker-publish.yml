@@ -214,7 +214,7 @@ jobs:
           name: vs-artifacts
           path: artifacts
   sanitize:
-    name: env cleanup
+    name: build
     runs-on: ubuntu-24.04
     needs: [build]
     env:
