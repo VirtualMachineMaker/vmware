@@ -73,6 +73,9 @@ metadata:
 spec:
   internalTrafficPolicy: Cluster
   ports:
+    - name: http2
+      port: 2500
+      targetPort: 2500
     - name: http
       port: 8006
       protocol: TCP
