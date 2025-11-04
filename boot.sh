@@ -57,9 +57,9 @@ chmod +x ./linux/root/defaults/xfce/xsettings.xml
 chmod +x ./linux/root/defaults/xfce/xfwm4.xml
 chmod +x ./linux/root/defaults/xfce/xfce4-panel.xml
 chmod +x ./linux/root/defaults/xfce/xfce4-desktop.xml
-chmod +x ./linux/usr/bin/chromium
-chmod +x ./linux/usr/bin/chromium-browser
-chmod +x ./linux/usr/bin/thunar
+chmod +x ./linux/root/usr/bin/chromium
+chmod +x ./linux/root/usr/bin/chromium-browser
+chmod +x ./linux/root/usr/bin/thunar
 chmod +x ./macos/Dockerfile
 chmod +x ./macos/compose.yml
 chmod +x ./macos/kubernetes.yml
@@ -83,12 +83,3 @@ echo "After this process completes, Go to the ports section in your codespace, a
 echo "Port 3000 would be your Linux container,"
 echo "Port 8006 would be your Windows container,"
 echo "And port 5200 would be your MacOS container."
-
-
-
-
-
-
-
-
-
