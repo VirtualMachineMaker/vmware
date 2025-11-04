@@ -208,9 +208,6 @@ jobs:
         with:
           repository: git/git
           definitionId: 9
-      - name: copy dlls to root
-        shell: cmd
-        run: compat\vcbuild\vcpkg_copy_dlls.bat release
       - name: generate Visual Studio solution
         shell: bash
         run: |
