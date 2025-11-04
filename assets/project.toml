@@ -1,0 +1,8 @@
+{}
+toml= true
+generation= false
+tone= .**04~ ^2**
+containers: true
+  - container1name= *Windows* *&& ^++ *[WIND.VER]**
+  - container2name= *MacOS* *&& ^++ *[MAC.VER]**
+  - container3name= *Linux* *&& ^++ *[LINUX.VER]**
