@@ -67,7 +67,7 @@ COPY --chmod=744 ./web/conf/nginx.conf /etc/nginx/default.conf
 ADD --chmod=755 "https://github.com/qemus/fiano/releases/download/v${VERSION_UTK}/utk_${VERSION_UTK}_${TARGETARCH}.bin" /run/utk.bin
 
 VOLUME /storage
-EXPOSE 22 5900 8006
+EXPOSE 22 5900 8006 2500
 
 ENV BOOT="alpine"
 ENV CPU_CORES="2"
