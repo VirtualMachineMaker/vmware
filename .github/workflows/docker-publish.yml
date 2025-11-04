@@ -145,7 +145,7 @@ jobs:
           echo "skip_concurrent=$skip_concurrent" >>$GITHUB_OUTPUT
       - name: skip test
         id: skip-if-redundant
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: steps.check-ref.outputs.enabled == 'yes'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
