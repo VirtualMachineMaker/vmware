@@ -106,3 +106,161 @@ jobs:
       - name: Run Microsoft Security DevOps
         uses: microsoft/security-devops-action@v1.6.0
         id: msdo
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          architecture: ${{ matrix.arch }} 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/checkout@v4
+      - name: ci-config branch
+        run: |
+          git -c protocol.version=2 clone \
+            --no-tags \
+            --single-branch \
+            -b ci-config \
+            --depth 1 \
+            --no-checkout \
+            --filter=blob:none \
+            https://github.com/${{ github.repository }} \
+            config-repo &&
+          cd config-repo &&
+          git checkout HEAD -- ci/config || true
+      - id: check-ref
+        name: ci-config check
+        run: |
+          enabled=yes
+          if test -x config-repo/ci/config/allow-ref
+          then
+            echo "::warning::ci/config/allow-ref is deprecated; use CI_BRANCHES instead"
+            if ! config-repo/ci/config/allow-ref '${{ github.ref }}'
+            then
+              enabled=no
+            fi
+          fi
+          skip_concurrent=yes
+          if test -x config-repo/ci/config/skip-concurrent &&
+             ! config-repo/ci/config/skip-concurrent '${{ github.ref }}'
+          then
+            skip_concurrent=no
+          fi
+          echo "enabled=$enabled" >>$GITHUB_OUTPUT
+          echo "skip_concurrent=$skip_concurrent" >>$GITHUB_OUTPUT
+      - name: skip test
+        id: skip-if-redundant
+        uses: actions/github-script@v7
+        if: steps.check-ref.outputs.enabled == 'yes'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              const { data: run } = await github.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+              const workflow_id = run.workflow_id;
+              const head_sha = run.head_sha;
+              const tree_id = run.head_commit.tree_id;
+              const { data: runs } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 500,
+                status: 'success',
+                workflow_id,
+              });
+              for (const run of runs.workflow_runs) {
+                if (head_sha === run.head_sha) {
+                  core.warning(`Successful run for the commit ${head_sha}: ${run.html_url}`);
+                  core.setOutput('enabled', ' but skip');
+                  break;
+                }
+                if (run.head_commit && tree_id === run.head_commit.tree_id) {
+                  core.warning(`Successful run for the tree ${tree_id}: ${run.html_url}`);
+                  core.setOutput('enabled', ' but skip');
+                  break;
+                }
+              }
+            } catch (e) {
+              core.warning(e);
+            }
+      - name: Install NVM
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 22
+          
+      - name: Verify Node.js version
+        run: |
+          node -v
+          npm -v
+          
+      - name: Check NVM terminal
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+      - name: initialize vcpkg
+        uses: actions/checkout@v4
+        with:
+          repository: 'microsoft/vcpkg'
+          path: 'compat/vcbuild/vcpkg'
+      - name: download vcpkg artifacts
+        uses: git-for-windows/get-azure-pipelines-artifact@v0
+        with:
+          repository: git/git
+          definitionId: 9
+      - name: add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+      - name: copy dlls to root
+        shell: cmd
+        run: compat\vcbuild\vcpkg_copy_dlls.bat release
+      - name: generate Visual Studio solution
+        shell: bash
+        run: |
+          cmake `pwd`/contrib/buildsystems/ -DCMAKE_PREFIX_PATH=`pwd`/compat/vcbuild/vcpkg/installed/x64-windows \
+          -DNO_GETTEXT=YesPlease -DPERL_TESTS=OFF -DPYTHON_TESTS=OFF -DCURL_NO_CURL_CMAKE=ON
+      - name: MSBuild
+        run: msbuild git.sln -property:Configuration=Release -property:Platform=x64 -maxCpuCount:4 -property:PlatformToolset=v142
+      - name: bundle artifact tar
+        shell: bash
+        env:
+          MSVC: 1
+          VCPKG_ROOT: ${{ github.workspace }}\compat\vcbuild\vcpkg
+        run: |
+          mkdir -p artifacts &&
+          eval "$(make -n artifacts-tar INCLUDE_DLLS_IN_ARTIFACTS=YesPlease ARTIFACTS_DIRECTORY=artifacts NO_GETTEXT=YesPlease 2>&1 | grep ^tar)"
+      - name: zip up tracked files
+        run: git archive -o artifacts/tracked.tar.gz HEAD
+      - name: upload tracked files and build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vs-artifacts
+          path: artifacts
+  sanitize:
+    name: Sanitize 1
+    runs-on: ubuntu-24.04
+    needs: [build]
+    env:
+      USE_NINJA: "1"
+      CC: "clang"
+      WASM2C_CFLAGS: "-march=x86-64-v2"
+    strategy:
+      matrix:
+        sanitizer: [asan, ubsan]
+        type: [release]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+  
