@@ -107,7 +107,7 @@ jobs:
         uses: microsoft/security-devops-action@v1.6.0
         id: msdo
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: ci-config branch
@@ -226,7 +226,7 @@ jobs:
         sanitizer: [asan, ubsan]
         type: [release]
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.x'
       - uses: actions/checkout@v4
