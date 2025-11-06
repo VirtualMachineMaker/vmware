@@ -12,7 +12,7 @@ services:
     cap_add:
       - NET_ADMIN
     ports:
-      - 8005:8005
+      - 2500:2500
       - 5900:5900/tcp
       - 5900:5900/udp
     volumes:
